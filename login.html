@@ -13,25 +13,28 @@
     </title>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    
+
     </script>
 
 </head>
 
 <body>
+    <!-- Add this at the top -->
+    <div class="header">
+        <span class="display-4">Netcreators Loyalty Program</span>
+    </div>
+
+
     <video autoplay loop muted playsinline class="background-video">
         <source src="./9669050-hd_1920_1080_25fps (1).mp4" type="video/mp4">
         Your browser does not support the video tag.
     </video>
-
     <div class="container">
         <div id="topRightContainer">
             <img src="./Final_logo4.2.png" id="topRightLogo" alt="Logo"><br>
             <span id="logoText">Netcreators</span><br>
             <span id="logoText">Automation</span>
         </div>
-
-
         <div class="window">
             <span class="h1">Log In</span>
             <form id="loginForm" onsubmit="return false;">
@@ -42,25 +45,20 @@
                 <small>
                     Forgot your password? <a href="#" id="forgotPasswordLink" class="text-primary">Reset Password</a>
                 </small>
-
                 <!-- Spinner -->
                 <div id="spinner" class="spinner-overlay">
                     <div class="spinner-border text-primary" role="status">
                         <span class="visually-hidden">Loading...</span>
                     </div>
                 </div>
-
                 <br>
             </form>
-
         </div>
     </div>
-    <!-- Toast Container (Toast messages will appear here) -->
-    <!-- Toast Container (Toast messages will appear here) -->
-    <div aria-live="polite" aria-atomic="true" class="position-fixed top-0 end-0 p-3" id="toastContainer">
-    </div>
-
+    <!-- Toast Container -->
+    <div aria-live="polite" aria-atomic="true" class="position-fixed top-0 end-0 p-3" id="toastContainer"></div>
 </body>
+
 <script>
     document.getElementById('forgotPasswordLink').addEventListener('click', function () {
         const email = document.getElementById('mail').value;
