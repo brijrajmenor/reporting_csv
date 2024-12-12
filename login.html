@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="style.css" type="text/css">
+    <title>
+        Login
+    </title>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    
+    </script>
+
+</head>
+
+<body>
+    <video autoplay loop muted playsinline class="background-video">
+        <source src="./9669050-hd_1920_1080_25fps (1).mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <div class="container">
+        <div id="topRightContainer">
+            <img src="./Final_logo4.2.png" id="topRightLogo" alt="Logo"><br>
+            <span id="logoText">Netcreators</span><br>
+            <span id="logoText">Automation</span>
+        </div>
+
+
+        <div class="window">
+            <span class="h1">Log In</span>
+            <form id="loginForm" onsubmit="return false;">
+                <input type="email" id="mail" class="mt-4 form-control" placeholder="Your email" required>
+                <input type="password" id="password" class="mt-2 form-control" placeholder="Your password" required>
+                <button type="submit" id="loginButton" class="mb-2 btn btn-light mt-2">Sign In</button>
+                <br>
+                <small>
+                    Forgot your password? <a href="#" id="forgotPasswordLink" class="text-primary">Reset Password</a>
+                </small>
+
+                <!-- Spinner -->
+                <div id="spinner" class="spinner-overlay">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+
+                <br>
+            </form>
+
+        </div>
+    </div>
+    <!-- Toast Container (Toast messages will appear here) -->
+    <!-- Toast Container (Toast messages will appear here) -->
+    <div aria-live="polite" aria-atomic="true" class="position-fixed top-0 end-0 p-3" id="toastContainer">
+    </div>
+
+</body>
+<script>
+    document.getElementById('forgotPasswordLink').addEventListener('click', function () {
+        const email = document.getElementById('mail').value;
+
+        if (!email) {
+            alert('Please enter your email address first.');
+            return;
+        }
+
+        // Firebase password reset
+        auth.sendPasswordResetEmail(email)
+            .then(() => {
+                alert('Password reset email sent! Check your inbox.');
+            })
+            .catch((error) => {
+                console.error(error.message);
+                // alert('Error: ' + error.message);
+            });
+    });
+
+    // Get Spinner Element
+    const spinner = document.getElementById('spinner');
+
+    // Login Button Click
+    document.getElementById('loginButton').addEventListener('click', function () {
+        const email = document.getElementById('mail').value;
+        const password = document.getElementById('password').value;
+
+        // Show Spinner
+        spinner.style.display = 'flex';
+
+        // Firebase Authentication Sign-In
+        auth.signInWithEmailAndPassword(email, password)
+            .then((userCredential) => {
+                // Hide Spinner
+                spinner.style.display = 'none';
+
+                // Successful login
+                const user = userCredential.user;
+                // alert('Login successful! Redirecting...');
+                window.location.href = 'index.html'; // Redirect to CSV Analyzer page
+            })
+            .catch((error) => {
+                // Hide Spinner
+                spinner.style.display = 'none';
+
+                // Handle errors
+                const errorMessage = error.message;
+                // alert(`Error: ${errorMessage}`);
+            });
+    });
+
+    // Get the toast element
+    const errorToast = new bootstrap.Toast(document.getElementById('errorToast'));
+
+    // Login Button Click
+    document.getElementById('loginButton').addEventListener('click', function () {
+        const email = document.getElementById('mail').value;
+        const password = document.getElementById('password').value;
+
+        // Show Spinner (for background process)
+        spinner.style.display = 'flex';
+
+        // Firebase Authentication Sign-In
+        auth.signInWithEmailAndPassword(email, password)
+            .then((userCredential) => {
+                // Hide Spinner
+                spinner.style.display = 'none';
+
+                // Successful login
+                const user = userCredential.user;
+                // alert('Login successful! Redirecting...');
+                window.location.href = 'index.html'; // Redirect to CSV Analyzer page
+            })
+            .catch((error) => {
+                // Hide Spinner
+                spinner.style.display = 'none';
+
+                // Handle error and display toast message
+                const errorMessage = error.message;
+
+                // Set the error message in the toast body
+                document.querySelector('.toast-body').textContent = errorMessage;
+
+                // Show the toast notification
+                errorToast.show();
+            });
+    });
+    // Customize Toast based on the error type
+    function showToastMessage(message, isSuccess) {
+        const toastBody = document.querySelector('.toast-body');
+        toastBody.textContent = message;
+
+        // Customize the toast color based on success or error
+        const toastElement = document.getElementById('errorToast');
+        if (isSuccess) {
+            toastElement.classList.remove('bg-danger');
+            toastElement.classList.add('bg-success');
+        } else {
+            toastElement.classList.remove('bg-success');
+            toastElement.classList.add('bg-danger');
+        }
+
+        // Show the toast
+        errorToast.show();
+    }
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCztQWTJOTBbdPBXdPl09OMC6sCCTPt1Yk",
+        authDomain: "loyalty-2e451.firebaseapp.com",
+        projectId: "loyalty-2e451",
+        storageBucket: "loyalty-2e451.appspot.com",
+        messagingSenderId: "902963018149",
+        appId: "1:902963018149:web:62111c9eb4eb51025e104c",
+        measurementId: "G-VB706ZYEX3"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    // Login Button Click
+    document.getElementById('loginButton').addEventListener('click', function () {
+        const email = document.getElementById('mail').value;
+        const password = document.getElementById('password').value;
+
+        // Firebase Authentication Sign-In
+        auth.signInWithEmailAndPassword(email, password)
+            .then((userCredential) => {
+                // Successful login
+                const user = userCredential.user;
+                // alert('Login successful! Redirecting...');
+                window.location.href = 'index.html'; // Redirect to CSV Analyzer page
+            })
+            .catch((error) => {
+                // Handle errors
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                // alert(`Error: ${errorMessage}`);
+            });
+    });
+    // Function to create and show a new toast message
+    // Function to map Firebase error codes to user-friendly messages
+    function getFirebaseErrorMessage(errorCode) {
+        switch (errorCode) {
+            case 'auth/invalid-email':
+                return 'The email address is not valid. Please check your email and try again.';
+            case 'auth/user-disabled':
+                return 'This user has been disabled. Please contact support.';
+            case 'auth/user-not-found':
+                return 'No account found with this email address. Please check the email and try again.';
+            case 'auth/wrong-password':
+                return 'The password you entered is incorrect. Please try again.';
+            case 'auth/too-many-requests':
+                return 'Too many attempts. Please try again later.';
+            case 'auth/email-already-in-use':
+                return 'The email address is already in use by another account. Please use a different email address.';
+            case 'auth/operation-not-allowed':
+                return 'This operation is not allowed. Please contact support.';
+            case 'auth/weak-password':
+                return 'The password is too weak. Please choose a stronger password.';
+            default:
+                return 'An unexpected error occurred. Please try again later.';
+        }
+    }
+
+    // Function to create and show a new toast message
+    function createToast(message, isSuccess) {
+        // Create a new toast element
+        const toast = document.createElement('div');
+        toast.classList.add('toast', 'align-items-center', 'text-white', 'border-0');
+        toast.setAttribute('role', 'alert');
+        toast.setAttribute('aria-live', 'assertive');
+        toast.setAttribute('aria-atomic', 'true');
+
+        // Set the toast color based on success or error
+        if (isSuccess) {
+            toast.classList.add('bg-success');
+        } else {
+            toast.classList.add('bg-danger');
+        }
+
+        // Create the toast body content
+        const toastBody = document.createElement('div');
+        toastBody.classList.add('d-flex');
+        const toastText = document.createElement('div');
+        toastText.classList.add('toast-body');
+        toastText.textContent = message;
+
+        // Add the close button
+        const closeButton = document.createElement('button');
+        closeButton.classList.add('btn-close', 'btn-close-white', 'me-2', 'm-auto');
+        closeButton.setAttribute('data-bs-dismiss', 'toast');
+        closeButton.setAttribute('aria-label', 'Close');
+
+        // Append the body and button to the toast
+        toastBody.appendChild(toastText);
+        toastBody.appendChild(closeButton);
+        toast.appendChild(toastBody);
+
+        // Append the new toast to the container
+        const toastContainer = document.getElementById('toastContainer');
+        toastContainer.appendChild(toast);
+
+        // Initialize and show the toast
+        const bootstrapToast = new bootstrap.Toast(toast);
+        bootstrapToast.show();
+    }
+
+    // Login Button Click
+    document.getElementById('loginButton').addEventListener('click', function () {
+        const email = document.getElementById('mail').value;
+        const password = document.getElementById('password').value;
+
+        // Show Spinner
+        spinner.style.display = 'flex';
+
+        // Firebase Authentication Sign-In
+        auth.signInWithEmailAndPassword(email, password)
+            .then((userCredential) => {
+                // Hide Spinner
+                spinner.style.display = 'none';
+
+                // Successful login
+                const user = userCredential.user;
+                createToast('Login successful! Redirecting...', true);
+                window.location.href = 'index.html'; // Redirect to CSV Analyzer page
+            })
+            .catch((error) => {
+                // Hide Spinner
+                spinner.style.display = 'none';
+
+                // Get the user-friendly error message
+                const userFriendlyMessage = getFirebaseErrorMessage(error.code);
+
+                // Show the toast with the user-friendly error message
+                createToast(userFriendlyMessage, false);
+            });
+    });
+
+    // Forgot Password Logic (With Toast)
+    document.getElementById('forgotPasswordLink').addEventListener('click', function () {
+        const email = document.getElementById('mail').value;
+
+        if (!email) {
+            createToast('Please enter your email address first.', false);
+            return;
+        }
+
+        // Firebase password reset
+        auth.sendPasswordResetEmail(email)
+            .then(() => {
+                createToast('Password reset email sent! Check your inbox.', true);
+            })
+            .catch((error) => {
+                console.error(error.message);
+                const userFriendlyMessage = getFirebaseErrorMessage(error.code);
+                createToast(userFriendlyMessage, false);
+            });
+    });
+
+    // Login Button Click
+    document.getElementById('loginButton').addEventListener('click', function () {
+        const email = document.getElementById('mail').value;
+        const password = document.getElementById('password').value;
+
+        // Show Spinner
+        spinner.style.display = 'flex';
+
+        // Firebase Authentication Sign-In
+        auth.signInWithEmailAndPassword(email, password)
+            .then((userCredential) => {
+                // Hide Spinner
+                spinner.style.display = 'none';
+
+                // Successful login
+                const user = userCredential.user;
+                createToast('Login successful! Redirecting...', true);
+                window.location.href = 'index.html'; // Redirect to CSV Analyzer page
+            })
+            .catch((error) => {
+                // Hide Spinner
+                spinner.style.display = 'none';
+
+                // Handle error and display toast message
+                const errorMessage = error.message;
+                createToast(errorMessage, false);
+            });
+    });
+
+    // Forgot Password Logic (With Toast)
+    document.getElementById('forgotPasswordLink').addEventListener('click', function () {
+        const email = document.getElementById('mail').value;
+
+        if (!email) {
+            createToast('Please enter your email address first.', false);
+            return;
+        }
+
+        // Firebase password reset
+        auth.sendPasswordResetEmail(email)
+            .then(() => {
+                createToast('Password reset email sent! Check your inbox.', true);
+            })
+            .catch((error) => {
+                console.error(error.message);
+                createToast('Error: ' + error.message, false);
+            });
+    });
+
+
+</script>
+
+</html>
