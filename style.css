@@ -67,7 +67,7 @@ body {
   /* Initially hidden */
 }
 
-.window {
+#window {
   width: 400px;
   height: 380px;
   padding: 40px;
