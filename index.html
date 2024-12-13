@@ -15,7 +15,7 @@
   <!-- Firebase Scripts -->
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
-  
+
 </head>
 
 <body>
@@ -54,147 +54,165 @@
           </div>
         </div>
       </div>
-
-    
-
-    <!-- Firebase Configuration -->
-    <script>
-      // Firebase configuration
-      const firebaseConfig = {
-        apiKey: "AIzaSyCztQWTJOTBbdPBXdPl09OMC6sCCTPt1Yk",
-        authDomain: "loyalty-2e451.firebaseapp.com",
-        projectId: "loyalty-2e451",
-        storageBucket: "loyalty-2e451.appspot.com",
-        messagingSenderId: "902963018149",
-        appId: "1:902963018149:web:62111c9eb4eb51025e104c",
-        measurementId: "G-VB706ZYEX3"
-      };
-
-      // Initialize Firebase
-      firebase.initializeApp(firebaseConfig);
-      const auth = firebase.auth();
-
-      // Redirect if not logged in
-      firebase.auth().onAuthStateChanged(user => {
-        if (!user && !window.location.href.includes("login.html")) {
-          // Redirect to login page if not already on it
-          window.location.href = "login.html";
-        }
-      });
+      <button class="btn btn-primary mb-4" onclick="window.location.href='analysis.html'">Analyse</button>
 
 
-      document.getElementById('logoutButton').addEventListener('click', () => {
-        auth.signOut()
-          .then(() => {
+      <!-- Firebase Configuration -->
+      <script>
+        // Firebase configuration
+        const firebaseConfig = {
+          apiKey: "AIzaSyCztQWTJOTBbdPBXdPl09OMC6sCCTPt1Yk",
+          authDomain: "loyalty-2e451.firebaseapp.com",
+          projectId: "loyalty-2e451",
+          storageBucket: "loyalty-2e451.appspot.com",
+          messagingSenderId: "902963018149",
+          appId: "1:902963018149:web:62111c9eb4eb51025e104c",
+          measurementId: "G-VB706ZYEX3"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        // Redirect if not logged in
+        firebase.auth().onAuthStateChanged(user => {
+          if (!user && !window.location.href.includes("login.html")) {
+            // Redirect to login page if not already on it
             window.location.href = "login.html";
-          })
-          .catch(error => {
-            console.log(`Error logging out: ${error.message}`);
-          });
-      });
-    </script>
+          }
+        });
 
-    <!-- Other Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
-    <script>
-      const combinedData = [];
-
-      document.getElementById('fileInput').addEventListener('change', function (event) {
-        const files = event.target.files;
-        if (files.length > 0) {
-          combinedData.length = 0;
-          let filesProcessed = 0;
-
-          Array.from(files).forEach(file => {
-            Papa.parse(file, {
-              header: true,
-              dynamicTyping: true,
-              complete: function (results) {
-                combinedData.push(...results.data);
-                filesProcessed++;
-                if (filesProcessed === files.length) {
-                  displayData(combinedData);
-                  analyzeData(combinedData);
-                }
-              }
+        document.getElementById('logoutButton').addEventListener('click', () => {
+          auth.signOut()
+            .then(() => {
+              window.location.href = "login.html";
+            })
+            .catch(error => {
+              console.log(`Error logging out: ${error.message}`);
             });
-          });
-        }
-      });
+        });
+      </script>
 
-      function displayData(data) {
-        const tableBody = document.querySelector('#dataTable tbody');
-        tableBody.innerHTML = '';
+      <!-- Other Scripts -->
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+      <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
-        data.forEach(row => {
-          if (row.Date) {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
+      <script>
+        // Reset localStorage on page load
+        window.onload = function () {
+          localStorage.setItem('uploadedCSVData', JSON.stringify([])); // Reset to an empty array
+        };
+
+        // Firebase Logout and Page Navigation
+        document.getElementById('logoutButton').addEventListener('click', () => {
+          auth.signOut()
+            .then(() => {
+              // Clear localStorage on logout
+              localStorage.setItem('uploadedCSVData', JSON.stringify([]));
+              window.location.href = "login.html";
+            })
+            .catch(error => {
+              console.log(`Error logging out: ${error.message}`);
+            });
+        });
+        const combinedData = [];
+
+        document.getElementById('fileInput').addEventListener('change', function (event) {
+          const files = event.target.files;
+          if (files.length > 0) {
+            combinedData.length = 0;
+            let filesProcessed = 0;
+
+            Array.from(files).forEach(file => {
+              Papa.parse(file, {
+                header: true,
+                dynamicTyping: true,
+                complete: function (results) {
+                  combinedData.push(...results.data);
+                  filesProcessed++;
+                  if (filesProcessed === files.length) {
+                    displayData(combinedData);
+                    analyzeData(combinedData);
+                  }
+                }
+              });
+            });
+          }
+        });
+
+        function displayData(data) {
+          const tableBody = document.querySelector('#dataTable tbody');
+          tableBody.innerHTML = '';
+
+          data.forEach(row => {
+            if (row.Date) {
+              const tr = document.createElement('tr');
+              tr.innerHTML = `
             <td>${row.Date}</td>
             <td>${row.Username}</td>
             <td>${row.Points}</td>
             <td>${row.Status}</td>
           `;
-            tableBody.appendChild(tr);
-          }
-        });
-
-        if ($.fn.DataTable.isDataTable('#dataTable')) {
-          $('#dataTable').DataTable().destroy();
-        }
-        $('#dataTable').DataTable({
-          paging: true,
-          searching: true,
-          ordering: true
-        });
-      }
-
-      function analyzeData(data) {
-        const groupedData = data.reduce((acc, row) => {
-          const date = row.Date;
-          if (!acc[date]) {
-            acc[date] = { pointsAdded: 0, pointsPaid: 0 };
-          }
-          if (row.Status === "Money Added") {
-            acc[date].pointsAdded += row.Points || 0;
-          } else if (row.Status === "Money Paid") {
-            acc[date].pointsPaid += row.Points || 0;
-          }
-          return acc;
-        }, {});
-
-        const labels = Object.keys(groupedData);
-        const pointsAddedData = labels.map(date => groupedData[date].pointsAdded);
-        const pointsPaidData = labels.map(date => groupedData[date].pointsPaid);
-
-        const ctx = document.getElementById('pointsChart').getContext('2d');
-        new Chart(ctx, {
-          type: 'line',
-          data: {
-            labels: labels,
-            datasets: [
-              { label: 'Points Added', data: pointsAddedData, borderColor: '#4caf50', fill: false },
-              { label: 'Points Paid', data: pointsPaidData, borderColor: '#f44336', fill: false }
-            ]
-          },
-          options: {
-            responsive: true,
-            plugins: {
-              legend: { display: true }
-            },
-            scales: {
-              x: { title: { display: true, text: 'Date' } },
-              y: { title: { display: true, text: 'Points' } }
+              tableBody.appendChild(tr);
             }
+          });
+
+          if ($.fn.DataTable.isDataTable('#dataTable')) {
+            $('#dataTable').DataTable().destroy();
           }
-        });
-      }
+          $('#dataTable').DataTable({
+            paging: true,
+            searching: true,
+            ordering: true
+          });
+        }
+
+        function analyzeData(data) {
+          localStorage.setItem('uploadedCSVData', JSON.stringify(data));
+          const groupedData = data.reduce((acc, row) => {
+            const date = row.Date;
+            if (!acc[date]) {
+              acc[date] = { pointsAdded: 0, pointsPaid: 0 };
+            }
+            if (row.Status === "Money Added") {
+              acc[date].pointsAdded += row.Points || 0;
+            } else if (row.Status === "Money Paid") {
+              acc[date].pointsPaid += row.Points || 0;
+            }
+            return acc;
+          }, {});
+
+          const labels = Object.keys(groupedData);
+          const pointsAddedData = labels.map(date => groupedData[date].pointsAdded);
+          const pointsPaidData = labels.map(date => groupedData[date].pointsPaid);
+
+          const ctx = document.getElementById('pointsChart').getContext('2d');
+          new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: labels,
+              datasets: [
+                { label: 'Points Added', data: pointsAddedData, borderColor: '#4caf50', fill: false },
+                { label: 'Points Paid', data: pointsPaidData, borderColor: '#f44336', fill: false }
+              ]
+            },
+            options: {
+              responsive: true,
+              plugins: {
+                legend: { display: true }
+              },
+              scales: {
+                x: { title: { display: true, text: 'Date' } },
+                y: { title: { display: true, text: 'Points' } }
+              }
+            }
+          });
+        }
 
 
-    </script>
+      </script>
 </body>
 
 </html>
